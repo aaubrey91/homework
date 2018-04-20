@@ -14,16 +14,16 @@ mu <- colMeans(ds) #SHOULD THIS BE ROW MEANS?
 dot_product <- function(x,y) {
   
   if (length(x) != length(y)) {
-    return("Vectors must be same size")
+   # print("Vectors must be same size")
+    stop("Vectors must be same size")
   }
   return(sum(x*y))
 }
 
-covariance_f <- function(dataset) {
-  
+center_matrix <- function(dataset) {
   mu <- colMeans(dataset)
   
-  Z <- data.frame()
+  Z <- data.matrix(dataset) #initialize matrix with dimensions of input
   
   ### Center Matrix ###
   for (i in 1:dim(ds)[1]) {   #rows
@@ -31,6 +31,12 @@ covariance_f <- function(dataset) {
       Z[i,j] <- (ds[i,j] - mu[j])
     }
   }
-  print(dot_product(Z[,1],Z[,2]) / length(Z[,1]))
+  
   return(Z)
 }
+
+covariance_f <- function(x,y) {
+  return(dot_product(x,y) / (length(x)-1)) #matches cov function in R when (n - 1))
+}
+
+#(Z(T)*Z)/N)
