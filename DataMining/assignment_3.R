@@ -60,7 +60,7 @@ covariance_mtrx <- function(dataset) {
 }
 
 ##Assert these are the same
-print("covariance_mtrx(Z) - cov(Z)")
+print("covariance_mtrx(Z) - cov(Z):")
 print(covariance_mtrx(Z) - cov(Z))
 
 ###########################################################################################################
@@ -94,7 +94,11 @@ plot(Z[,2], dnorm(Z[,2])) #index 2 as attributes start at 0 based on assignment 
 #5. Using the covariance matrix from above, which attribute has the largest variance, and which attribute 
 #has the smallest variance? Print these values.
 
-print()
+print("Attribute with the smallest variance is: ")
+print(min(covariance_mtrx(Z)))
+
+print("Attribute with the largest variance is: ") 
+print(max(covariance_mtrx(Z)))
 
 ###########################################################################################################
 
@@ -104,11 +108,13 @@ print()
 row <- which(max(covariance_mtrx(Z)) == covariance_mtrx(Z), arr.ind = T)[1]
 col <- which(max(covariance_mtrx(Z)) == covariance_mtrx(Z), arr.ind = T)[2]
 
-cat("MAX Covariance occurs between attributes",toString(row),"and",toString(col),".")
+cat("MAX Covariance occurs between attributes",toString(row),"and",toString(col),":")
+print(max(covariance_mtrx(Z)))
 
 row <- which(min(covariance_mtrx(Z)) == covariance_mtrx(Z), arr.ind = T)[1]
 col <- which(min(covariance_mtrx(Z)) == covariance_mtrx(Z), arr.ind = T)[2]
-cat("MIN Covariance occurs between attributes",toString(row),"and",toString(col),".")
+cat("MIN Covariance occurs between attributes",toString(row),"and",toString(col),":")
+print(min(covariance_mtrx(Z)))
 
 ###########################################################################################################
 
@@ -117,13 +123,31 @@ cat("MIN Covariance occurs between attributes",toString(row),"and",toString(col)
 #function in R.
 
 correlation_mtrx <- function(dataset) {
-  cov_mtrx <- covariance_mtrx(dataset)
+  
+  #Covariance of the standardized variables.
+  dataset_scaled <- scale(dataset, center = TRUE, scale=TRUE)
+  #cov_mtrx <- covariance_mtrx(dataset_scaled)
+  var_ds_scaled <- var(dataset_scaled)
+  
+  #print(head(cov_mtrx))
+
   #diag(covariance_mtrx(Z))^(-1/2) * covariance_mtrx(Z) * diag(covariance_mtrx(Z))^(-1/2)
   
   #return(((diag(cov_mtrx))^-(1/2)) * cov_mtrx * ((diag(cov_mtrx))^-(1/2)))
   #return(sqrt(diag(cov_mtrx)) * cov_mtrx * sqrt(diag(cov_mtrx)))
   #return(((diag(cov_mtrx))^((1/2)*sign(-1))) * cov_mtrx * ((diag(cov_mtrx))^((1/2)*sign(-1))))
-  return((dot_product(Z[,1], Z[,2]) / (sd(Z[,1])*sd(Z[,2]))))
+  #return((dot_product(Z[,1], Z[,2]) / (sd(Z[,1])*sd(Z[,2]))))
+  #return(diag(covariance_mtrx(Z))^(-1/2) * covariance_mtrx(Z) * diag(covariance_mtrx(Z))^(-1/2))
+  
+  ##Need to covert this back!
+  #return(diag(var(dataset))^-(1/2) * var(dataset) * diag(var(dataset))^-(1/2))
+  
+  #return(diag(cov_mtrx)^-(1/2) * cov_mtrx * diag(cov_mtrx)^-(1/2))
+  #return(diag(var(dataset_scaled))^-(1/2) * var(dataset_scaled) * diag(var(dataset_scaled))^-(1/2))
+  return(diag(var_ds_scaled)^-(1/2) * var_ds_scaled * diag(var_ds_scaled)^-(1/2))
+  
+  #Works when scaled down
+  #Z <- scale(ds, center = TRUE, scale = TRUE)
 }
 
 ###########################################################################################################
