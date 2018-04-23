@@ -14,6 +14,7 @@ centroids <- iris_numeric[ran_samples,]
 
 ############################# FUNCTION DEFINITIONS #############################
 
+
 ## Calc Euclidean distances ##
 calc_distances <- function(data, centroids) {
   distances <- matrix(c(0), ncol=nrow(data), nrow=nrow(centroids))
@@ -54,9 +55,30 @@ assign_group <- function(euc_distances) {
   
 }
 
-############################# FUNCTION DEFINITIONS #############################
+# Assign new centroids ##
+assign_centroid <- function(data, groups) {
+  #iris_numeric[t(groups)[,1] == 1,]
+  #dim(iris_numeric[t(groups)[,1] == 1,])[1]
+  #colMeans(iris_numeric)[1]
+  
+  new_centroids <- matrix(c(0), nrow=nrow(groups), ncol=ncol(data))
+  
+  for (i in 1:dim(new_centroids)[1]) {
+    group <- data[t(groups)[,i] == 1,]
+    group_size <- dim(group)[1]
+    new_centroids[i,] <- c(colMeans(group)[1], colMeans(group)[2], colMeans(group)[3], colMeans(group)[4])
+  }
+  
+  #group_1 <- data[t(groups)[,1] == 1,]
+  #group_1_size <- dim(group_1)[1]
+  #group_1_dims <- c((colMeans(group_1)[1] / group_1_size), (colMeans(group_1)[2] / group_1_size), (colMeans(group_1)[3] / group_1_size), (colMeans(group_1)[4] / group_1_size))
+  return(new_centroids)
+}
+
+################################################################################
 
 distances <- calc_distances(iris_numeric, centroids)
 groups <- assign_group(distances)
+
 
 
