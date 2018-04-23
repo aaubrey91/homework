@@ -55,7 +55,7 @@ assign_group <- function(euc_distances) {
   
 }
 
-# Assign new centroids ##
+## Assign new centroids ##
 assign_centroid <- function(data, groups) {
   #iris_numeric[t(groups)[,1] == 1,]
   #dim(iris_numeric[t(groups)[,1] == 1,])[1]
@@ -80,5 +80,40 @@ assign_centroid <- function(data, groups) {
 distances <- calc_distances(iris_numeric, centroids)
 groups <- assign_group(distances)
 
+while(TRUE) {
+  
+  #Calc new groups
+  new_centroids <- assign_centroid(iris_numeric, groups)
+  new_distances <- calc_distances(iris_numeric, new_centroids)
+  new_groups <- assign_group(new_distances)
+  
+  if(identical(groups, new_groups)) { # New Groups match old groups, let's break,
+    break
+  }
+  else {
+    
+    #reset vars for next loop
+    #centroids <- new_centroids
+    groups <- new_groups
+  }
+}
 
+built_in_r_funct <- kmeans(iris_numeric, 3)
 
+print("Number of elements in cluster 1 for built in function:")
+print(sum(built_in_r_funct$cluster==1))
+
+print("Number of elements in cluster 2 for built in function:")
+print(sum(built_in_r_funct$cluster==2))
+
+print("Number of elements in cluster 3 for built in function:")
+print(sum(built_in_r_funct$cluster==3))
+
+print("Number of elements in cluster 1 for user defined function:")
+print(sum(groups[1,] == 1))
+
+print("Number of elements in cluster 2 for user defined function:")
+print(sum(groups[2,] == 1))
+
+print("Number of elements in cluster 3 for user defined function:")
+print(sum(groups[2,] == 1))
