@@ -1,6 +1,8 @@
 library(datasets)
 data(iris)
 
+pdf("myplots.pdf")
+
 iris_numeric <- iris[,1:4]
 
 #define k
@@ -75,6 +77,20 @@ assign_centroid <- function(data, groups) {
   return(new_centroids)
 }
 
+### Transform Groups to Cluster Nums for plotting###
+assign_cluster_num <- function(groups) {
+  clusters <- matrix(c(0), nrow=ncol(groups))
+  
+  for (i in 1:dim(clusters)[1]) {
+    for (k in 1:dim(groups)[1]) {
+      if(t(groups)[i,k] == 1) {
+        clusters[i] = k
+      }
+    }
+  }
+  return(clusters)
+}
+
 ################################################################################
 
 distances <- calc_distances(iris_numeric, centroids)
@@ -87,13 +103,11 @@ while(TRUE) {
   new_distances <- calc_distances(iris_numeric, new_centroids)
   new_groups <- assign_group(new_distances)
   
-  if(identical(groups, new_groups)) { # New Groups match old groups, let's break,
+  if(identical(groups, new_groups)) { # New Groups match old groups, let's break, they haven't changed
     break
   }
   else {
-    
     #reset vars for next loop
-    #centroids <- new_centroids
     groups <- new_groups
   }
 }
@@ -116,4 +130,12 @@ print("Number of elements in cluster 2 for user defined function:")
 print(sum(groups[2,] == 1))
 
 print("Number of elements in cluster 3 for user defined function:")
-print(sum(groups[2,] == 1))
+print(sum(groups[3,] == 1))
+
+
+library(cluster)
+
+clusplot(iris, built_in_r_funct$cluster, color=TRUE, shade=TRUE, lines=0, main="Built in R Function")
+
+clusplot(iris, assign_cluster_num(groups), color=TRUE, shade=TRUE, lines=0, main="Alex defined R Function")
+graphics.off()

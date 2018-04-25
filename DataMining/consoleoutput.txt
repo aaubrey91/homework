@@ -1,0 +1,12 @@
+[1] "Number of elements in cluster 1 for built in function:"
+[1] 50
+[1] "Number of elements in cluster 2 for built in function:"
+[1] 62
+[1] "Number of elements in cluster 3 for built in function:"
+[1] 38
+[1] "Number of elements in cluster 1 for user defined function:"
+[1] 50
+[1] "Number of elements in cluster 2 for user defined function:"
+[1] 38
+[1] "Number of elements in cluster 3 for user defined function:"
+[1] 62
