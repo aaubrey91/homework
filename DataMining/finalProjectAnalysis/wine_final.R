@@ -34,8 +34,11 @@ kNNdistplot(s[,c(2:14)], 18)
 for (i in 1:100) {
   s <- ds[sample(nrow(ds), k*30),]
   db <- dbscan(s[,c(2:14)], eps=4.5, MinPts=18)
+  #db <- dbscan(s[,c(13:14)], eps=90, MinPts=3) --- Gets Three Clusters
   c <- confusionMatrix(table(s$class, pk$pamobject$clustering))
   acc[i] <- c$overall[1]
+  ### Can talk about how it varies and unable to compute a p-value.
+  ### Use "good_dbscan_plot.png" plot in paper as well as bad plot
 }
 mean(acc)
 
@@ -48,6 +51,12 @@ for (i in 1:100) {
   c <- confusionMatrix(table(s$class, sc))
   acc[i] <- c$overall[1]
 }
+dmultinom( c( i, j, k ), prob = givenProbabilities ) 
+givenProbabilities <- ( 1/N )*classification
+
+## Using Built in function
+multinomial.test(c(56, 72, 49), c(58/178, 71/178, 48/178))
+
 mean(acc)
 min(acc)
 max(acc)
