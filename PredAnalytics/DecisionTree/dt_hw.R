@@ -14,6 +14,7 @@ data[data$glass == 4,]$glass_name <- "vehicle_windows_non_float_processed"
 data[data$glass == 5,]$glass_name <- "containers"
 data[data$glass == 6,]$glass_name <- "tableware"
 data[data$glass == 7,]$glass_name <- "headlamps"
+data$glass_name <- as.factor(data$glass_name)
 
 #Drop ID and the class number before we changed it
 data$ID <- NULL
@@ -37,8 +38,40 @@ trained_tree <- train(glass_name ~ ., data=train, method='rpart',
                       trControl=fitControl, metric='Accuracy', maximize=TRUE, tuneGrid=Grid)
 trained_tree
 
-final_tree <- predict(trained_tree, test, type="raw")
-confusionMatrix(final_tree, data[test,]$glass_name)
+pred <- predict(trained_tree, test, type="raw")
+confusionMatrix(table(pred, data[t2,]$glass_name))
+plot(pred)
 
+#Let's plot the tree with the rpart function, fancy plot wouldn't work on mac
+dfit <- rpart(glass_name ~ ., data=train, control=temp, cp=trained_tree)
+rpart.plot::rpart.plot(dfit)
 
+### 2. Bagging functino ###
+library(ipred)
 
+### Find best nbagg checking from 1-70
+acc <- NULL
+for (i in 1:70) {
+  baggedTree <- bagging(glass_name ~ ., data=train, nbagg=i)
+  pred <- predict(baggedTree, test)
+  c <- confusionMatrix(table(pred, data[t2,]$glass_name))  
+  acc[i] <- c$overall[1]
+}
+
+nbagg <- which(max(acc) == acc, arr.ind = TRUE)
+baggedTree <- bagging(glass_name ~ ., data=train, nbagg=nbagg)
+pred <- predict(baggedTree, test)
+confusionMatrix(table(pred, data[t2,]$glass_name))  
+
+### 3. RandomForest ###
+library(randomForest)
+control <- trainControl(method="repeatedcv", number=30, repeats=5)
+metric <- 'Accuracy'
+n <- round(sqrt(ncol(train)))
+tuneGrid <- expand.grid(.mtry=seq(1,n,1))
+rf_default <- train(glass_name ~ ., data=train, method="rf", 
+                    metric=metric, tuneGrid=tuneGrid, trControl=control)
+print(rf_default)
+
+pred <- predict(rf_default, test)
+confusionMatrix(table(pred, data[t2,]$glass_name))
