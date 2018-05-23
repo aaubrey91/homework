@@ -1,5 +1,5 @@
 library(rpart)
-library(rattle)
+#library(rattle)
 library(caret)
 
 data <- read.csv("http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data",
