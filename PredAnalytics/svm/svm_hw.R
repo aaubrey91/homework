@@ -6,41 +6,56 @@ data <- read.csv('http://archive.ics.uci.edu/ml/machine-learning-databases/tic-t
                                'middle-middle-square','middle-right-square','bottom-left-square','bottom-middle-square',
                                'bottom-right-square', 'Class'))
 
-#data[data$top.left.square == 'x',]$top.left.square <- 1
-
-
-#data[,1] <- as.numeric( factor(data[,1]))
-#data[,2] <- as.numeric( factor(data[,2]))
-#data[,3] <- as.numeric( factor(data[,3]))
-#data[,4] <- as.numeric( factor(data[,4]))
-#data[,5] <- as.numeric( factor(data[,5]))
-#data[,6] <- as.numeric( factor(data[,6]))
-#data[,7] <- as.numeric( factor(data[,7]))
-#data[,8] <- as.numeric( factor(data[,8]))
-#data[,9] <- as.numeric( factor(data[,9]))
-
-
+### Change each char to a num
 change_to_nums <- function(dp) {
-  if (dp == 'x') {
-    return(0)
-  } 
-  else if (dp == 'o') {
-    return(1)
-  }
-  else if (dp == 'b') {
-    return(2)
-  }
-  else {
-    return(dp)
+  if (!is.na(dp)) {
+    if (dp == 'x') {
+      return(-1)
+    } 
+    else if (dp == 'o') {
+      return(0)
+    }
+    else if (dp == 'b') {
+      return(1)
+    }
+    else {
+      return(dp)
+    }
   }
 }
 
-apply(data, c(957,10), change_to_nums)
+#apply the function to each item...
+data <- as.data.frame(apply(data, c(1,2), change_to_nums))
+
+#Ensure the transformed columns are numeric
+data[,c(1:9)] <- sapply(data[,c(1:9)], as.numeric)
+
+n <- dim(data)[1]
+
+t1 = sample(1:957, n*.8)
+t2 = setdiff(1:957, t1)
+train = subset(data[t1,])
+test = subset(data[t2,], select =-Class)
+
+cl = data[t2,]$Class
+
+y = train$Class
+x = subset(train, select=-Class)
+
+P_model <- train(x,y, method="svmPoly", tuneLength=5,
+                 trControl=trainControl(method='repeatedcv', number=10, repeats=10))
+
+L_model <- train(x,y, method="svmLinear", tuneLength=5,
+                 trControl=trainControl(method='repeatedcv', number=10, repeats=10))
+
+R_model <- train(x,y, method="svmRadial", tuneLength=5,
+                 trControl=trainControl(method='repeatedcv', number=10, repeats=10))
 
 
-print_v <- function(x) {print(x)}
-apply(data, c(957,10), print_v(x))
+## svmPoly gave us best results
+max(P_model$results[4])
+max(L_model$results[2])
+max(R_model$results[3])
 
-
-
-
+pred <- predict(P_model, test)
+confusionMatrix(pred, cl)

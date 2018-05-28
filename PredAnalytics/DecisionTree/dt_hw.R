@@ -46,7 +46,7 @@ plot(pred)
 
 temp <- rpart.control(xval=10, minbucket = 2, minsplit = 4, cp = 0)
 #Let's plot the tree with the rpart function, couldn't get fancy plot to work on mac
-dfit <- rpart(glass_name ~ ., data=train, control=temp, cp=trained_tree)
+dfit <- rpart(glass_name, data=train, control=temp, cp=trained_tree)
 rpart.plot::rpart.plot(dfit)
 
 ### 2. Bagging functino ###
