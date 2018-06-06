@@ -21,23 +21,34 @@ write.table(pre_data, file = "maincharlesbook_clean.csv", sep=",", row.names = F
 
 data = read.transactions("maincharlesbook_clean_final.csv", format="basket", sep=",")
 
-rules <- apriori(data, parameter = list(supp = 0.1, conf=0.8),
-                 appearance=list(default="lhs", rhs=c("CookBks","ItalCook")), 
+rules <- apriori(data=data, parameter = list(supp = 0.1, conf=0.8, minlen=2),
+                 appearance=list(default="lhs", rhs="CookBks"), 
                  control=list(verbose=F))
 
-#rules <- apriori(data, parameter = list(supp = 0.1, conf=0.8),
-#                 appearance=list(default="rhs", lhs="CookBks"), 
-#                 control=list(verbose=F))
+rules <- sort(rules, decreasing = TRUE, by="confidence")
 
-#rules <- apriori(data, parameter=list(supp=0.1, conf=0.8))
+print("What is the top item(s) that indicates customers will also buy or get Cook Books?")
+print("Top items are Child Books and Youth Books")
+inspect(rules[1])
 
-inspect(rules)
+print("Will your answer to the last question change if you use lift to select the best rule?")
+print("No, it appears Child Books and Youth Books are still the top suggestion.")
+rules <- sort(rules, decreasing = TRUE, by="lift")
+inspect(rules[1])
 
-rules <- sort(rules, decreasing = TRUE, by="support")
 
 
 rules <- apriori(data, parameter = list(supp = 0.01, conf=0.5),
                  appearance=list(default="rhs", lhs=c("ChildBks","YouthBks")), 
                  control=list(verbose=F))
-inspect(rules)
-rules <- sort(rules, decreasing = TRUE, by="support")
+
+rules <- sort(rules, decreasing = TRUE, by="confidence")
+print("What is the top items(s) that customers will also buy or get if they ahve already picked or bought child books and youth books together?")
+print("Supporting our last analysis, customers will likely pick up Cook Books")
+inspect(rules[1])
+
+print("Will your answer to the last question change if you use lift to select the best rule?")
+print("Yes, it will indeed change if we choose to use lift as a way of selecting the best rule")
+print("Now, customers will likely pick up Do it yourself books as a top suggestion.")
+rules <- sort(rules, decreasing = TRUE, by="lift")
+inspect(rules[1])
