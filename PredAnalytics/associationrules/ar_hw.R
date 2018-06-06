@@ -19,9 +19,25 @@ pre_data <- pre_data[,c("ChildBks", "YouthBks", "CookBks", "DoItYBks", "RefBks",
 
 write.table(pre_data, file = "maincharlesbook_clean.csv", sep=",", row.names = FALSE, col.names=FALSE)
 
-data = read.transactions("maincharlesbook_clean.csv", format="basket", sep=",")
+data = read.transactions("maincharlesbook_clean_final.csv", format="basket", sep=",")
 
 rules <- apriori(data, parameter = list(supp = 0.1, conf=0.8),
-                 appearance=list(default="lhs", rhs="CookBks"))
+                 appearance=list(default="lhs", rhs=c("CookBks","ItalCook")), 
+                 control=list(verbose=F))
+
+#rules <- apriori(data, parameter = list(supp = 0.1, conf=0.8),
+#                 appearance=list(default="rhs", lhs="CookBks"), 
+#                 control=list(verbose=F))
+
+#rules <- apriori(data, parameter=list(supp=0.1, conf=0.8))
 
 inspect(rules)
+
+rules <- sort(rules, decreasing = TRUE, by="support")
+
+
+rules <- apriori(data, parameter = list(supp = 0.01, conf=0.5),
+                 appearance=list(default="rhs", lhs=c("ChildBks","YouthBks")), 
+                 control=list(verbose=F))
+inspect(rules)
+rules <- sort(rules, decreasing = TRUE, by="support")
